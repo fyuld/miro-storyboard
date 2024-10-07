@@ -1,0 +1,1 @@
+export { CharactersDisplay } from './CharactersDisplay'

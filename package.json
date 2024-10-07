@@ -1,0 +1,30 @@
+{
+  "name": "fyuld-storyboard",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.1",
+    "@mui/material": "^6.1.1",
+    "he": "^1.2.0",
+    "mirotone": "5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@mirohq/websdk-types": "latest",
+    "@types/he": "^1.2.3",
+    "@types/node": "^18.8.2",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "4.9.5",
+    "vite": "3.0.3"
+  }
+}
