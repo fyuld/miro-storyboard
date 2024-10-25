@@ -15,8 +15,6 @@ const resolveSceneTitle = (sceneFrame: Frame): string => {
 }
 
 const resolveIfFirstScene = (sceneFrame: Frame): boolean => {
-  console.log('resolveIfFirstScene:', sceneFrame.title.indexOf('[FirstScene]'))
-
   return  sceneFrame.title.indexOf('[FirstScene]') > 0
 }
 

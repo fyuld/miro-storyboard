@@ -1,5 +1,6 @@
 import { Dialogue, DialogueChoice, DialogueKind, Game, Identifier } from '../../datamodel'
 import { GameAdvanceParams, OnAdvanceListener } from '../../datamodel/game-logic'
+import { notEmptyString } from '../../helpers/notEmptyString'
 import { retrieveFirstActivity, retrieveFirstScene } from '../helpers'
 
 const delay = (): Promise<any> => {
@@ -12,15 +13,18 @@ const delay = (): Promise<any> => {
 
 const resolveNextDialogue = (dialogue: Dialogue, selectedChoice?: Identifier): Identifier => {
   if (dialogue.kind === DialogueKind.SimpleDialogue) {
-    return dialogue.next.next
+    try {
+      return dialogue.next.next
+    } catch (error) {
+      console.error('resolveNextDialogue:', dialogue)
+      console.error('resolveNextDialogue:', dialogue.next)
+    }
   } else if (dialogue.kind === DialogueKind.MultipleChoiceDialogue) {
     const choice: DialogueChoice | undefined = dialogue.choices.find((availableChoice) => availableChoice.identifier === selectedChoice)
 
     if (choice === undefined) {
       throw new Error(`resolveNextDialogue: Unable to located choice: ${selectedChoice} for dialogue: ${dialogue}`)
     }
-
-    console.log('resolveNextDialogue:', choice, selectedChoice)
 
     return choice.next.next
   } else {
@@ -37,7 +41,6 @@ export class GameLogic {
   private _dialogues: Dialogue[] = []
 
   constructor(game: Game) {
-    console.log('GameLogic Created')
     this.game = game
     this._isLocked = false
 
@@ -65,8 +68,6 @@ export class GameLogic {
   }
 
   public async advance(params?: GameAdvanceParams): Promise<void> {
-    console.log('GameLogic.advance', params)
-
     if (this._isLocked) {
       console.log('GameLogic:Locked')
       return
@@ -79,9 +80,16 @@ export class GameLogic {
     if (this._currentDialogue === undefined) {
       this._currentDialogue = retrieveFirstActivity(retrieveFirstScene(this.game))
     } else {
-      const nextDialogueId: Identifier = resolveNextDialogue(this._currentDialogue, params?.choice)
-      const nextDialogue = this._dialogues.find((dialogue: Dialogue) => dialogue.identifier === nextDialogueId)
-      this._currentDialogue = nextDialogue
+      const isAdvanceDisallowed = this._currentDialogue.kind === DialogueKind.MultipleChoiceDialogue && !notEmptyString(params?.choice)
+
+      if (isAdvanceDisallowed) {
+        this.unlock()
+        return
+      } else { 
+        const nextDialogueId: Identifier = resolveNextDialogue(this._currentDialogue, params?.choice)
+        const nextDialogue = this._dialogues.find((dialogue: Dialogue) => dialogue.identifier === nextDialogueId)
+        this._currentDialogue = nextDialogue
+      }
     }
 
     this._history.push({ dialogue: this._currentDialogue })
@@ -89,8 +97,6 @@ export class GameLogic {
     this._onAdvanceListeners.forEach((listener: OnAdvanceListener) =>
       listener({ history: this._history })
     )
-
-    console.log('GameLogic.advance', 'after:history', this._history.length, this._history)
 
     this.unlock()
   }

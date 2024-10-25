@@ -23,8 +23,6 @@ type DialogueDisplayProps = {
 const DialogueDisplay = (props: DialogueDisplayProps) => {
   const { dialogue, className, onChoiceSelect, isEnabled, forwardRef } = props
 
-  console.log('DialogueDisplay:', dialogue.content, dialogue.kind)
-
   if (dialogue.kind === DialogueKind.MultipleChoiceDialogue) {
     const { content, character, choices } = dialogue
 

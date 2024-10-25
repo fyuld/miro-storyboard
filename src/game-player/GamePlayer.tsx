@@ -67,7 +67,6 @@ const gameSimulatorReducer: GameSimulatorReducer = (state, action): GameSimulato
     case GameSimulatorActionTypes.DialogueChoiceSelected:
       return { ...state, selectedChoice: action.payload.choice }
     case GameSimulatorActionTypes.AdvanceGame:
-      console.log(GameSimulatorActionTypes.AdvanceGame, state.selectedChoice)
       const params: AdvanceParams = {}
 
       if (notEmptyString(state.selectedChoice)) {
